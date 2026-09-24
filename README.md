@@ -98,8 +98,6 @@ In the Claude Code panel, switch the permission mode to **Edit automatically** (
 2. Ask Claude to edit a file.
 3. The changed lines turn green, **Accept / Reject** buttons appear above them, and accept-file / reject-file icons appear in the editor title bar. The status bar shows `1 file · N changes`.
 
-If nothing appears, see [Troubleshooting](#troubleshooting).
-
 ---
 
 ## Updating to a new version
@@ -148,46 +146,6 @@ If `cmd+y` / `cmd+n` clash with something, set `"hunker.keybindingStyle": "alt"`
 - **Reject** a change: Hunker puts the old lines back into the file and saves it. `cmd+z` undoes the reject.
 - **Reject file**: restores the file to how it was before Claude's first edit. If Claude created the file, it's moved to the Trash.
 - Claude can keep editing a file you haven't reviewed yet. All its edits pile up into one review against the version from before its first edit.
-
----
-
-## How it works
-
-```
-Claude Code ──PreToolUse hook──▶ ~/.claude/hunker/capture.js ──▶ ~/.claude/hunker/baselines/<sha1(path)>.json
-                                                                        │ (file watcher)
-Cursor ◀── highlights / buttons / hover / peek ◀── Hunker: diff(baseline, current text)
-```
-
-Before each edit, the hook saves a copy of the file, unless it already has one. Hunker compares that copy with the current text (including unsaved changes) and shows the difference. Accepting updates the copy. Rejecting edits the real file. Several Cursor windows can share the store, and each one only shows files inside its own workspace.
-
----
-
-## Troubleshooting
-
-**Nothing shows up after Claude edits a file**
-
-1. Check that baselines are being saved: `ls ~/.claude/hunker/baselines`. There should be one `.json` file per edited file.
-2. If the folder is empty, the hook isn't running:
-   - Did you start a **new** Claude Code session after installing the hook?
-   - Run the hook's command from `~/.claude/settings.json` by hand to check that the node path works:
-     `echo '{"tool_input":{"file_path":"/tmp/x"}}' | /path/to/node ~/.claude/hunker/capture.js && echo ok`
-   - If you changed Node versions (for example with nvm), run **Hunker: Install Claude Code Hook** again. It replaces the old entry and doesn't add a second one.
-3. If baselines exist but nothing is highlighted, check that the file is inside the folder you have open in Cursor.
-4. Claude edits made through **Bash** (`sed -i`, `cat > file`, etc.) skip the hook and won't appear. See [Known limitations](#known-limitations).
-
-**A review is stuck, or you want to start over**
-
-Run **Hunker: Accept All Changes**, or delete the baselines by hand: `rm ~/.claude/hunker/baselines/*.json`.
-
-**`~/.claude/settings.json` looks wrong after installing the hook**
-
-Every install and uninstall makes a backup first. Restore the latest one:
-
-```sh
-ls -t ~/.claude/settings.json.hunker-backup-* | head -1
-cp "$(ls -t ~/.claude/settings.json.hunker-backup-* | head -1)" ~/.claude/settings.json
-```
 
 ---
 
