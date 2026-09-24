@@ -181,10 +181,11 @@ export class ReviewModel implements vscode.Disposable {
   }
 
   updateContextKeys(): void {
-    const any = this.pendingFiles().length > 0;
+    const count = this.pendingFiles().length;
     const active = vscode.window.activeTextEditor?.document.uri;
     const editorHas = !!active && active.scheme === 'file' && !!this.get(active.fsPath);
-    void vscode.commands.executeCommand('setContext', 'hunker.hasAnyChanges', any);
+    void vscode.commands.executeCommand('setContext', 'hunker.hasAnyChanges', count > 0);
+    void vscode.commands.executeCommand('setContext', 'hunker.hasMultipleFiles', count > 1);
     void vscode.commands.executeCommand('setContext', 'hunker.editorHasChanges', editorHas);
   }
 

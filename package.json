@@ -20,15 +20,15 @@
     "commands": [
       { "command": "hunker.acceptHunk", "title": "Accept Change at Cursor", "category": "Hunker", "icon": "$(check)" },
       { "command": "hunker.rejectHunk", "title": "Reject Change at Cursor", "category": "Hunker", "icon": "$(close)" },
-      { "command": "hunker.acceptFile", "title": "Accept All Changes in File", "category": "Hunker" },
-      { "command": "hunker.rejectFile", "title": "Reject All Changes in File", "category": "Hunker" },
-      { "command": "hunker.acceptAll", "title": "Accept All Changes (All Files)", "category": "Hunker" },
-      { "command": "hunker.rejectAll", "title": "Reject All Changes (All Files)", "category": "Hunker" },
+      { "command": "hunker.acceptFile", "title": "Accept All Changes in File", "category": "Hunker", "icon": "$(check)" },
+      { "command": "hunker.rejectFile", "title": "Reject All Changes in File", "category": "Hunker", "icon": "$(discard)" },
+      { "command": "hunker.acceptAll", "title": "Accept All Changes (All Files)", "category": "Hunker", "icon": "$(check-all)" },
+      { "command": "hunker.rejectAll", "title": "Reject All Changes (All Files)", "category": "Hunker", "icon": "$(close-all)" },
       { "command": "hunker.nextHunk", "title": "Next Change", "category": "Hunker" },
       { "command": "hunker.prevHunk", "title": "Previous Change", "category": "Hunker" },
-      { "command": "hunker.nextFile", "title": "Next Edited File", "category": "Hunker" },
-      { "command": "hunker.prevFile", "title": "Previous Edited File", "category": "Hunker" },
-      { "command": "hunker.showFiles", "title": "Show Edited Files", "category": "Hunker" },
+      { "command": "hunker.nextFile", "title": "Next Edited File", "category": "Hunker", "icon": "$(arrow-right)" },
+      { "command": "hunker.prevFile", "title": "Previous Edited File", "category": "Hunker", "icon": "$(arrow-left)" },
+      { "command": "hunker.showFiles", "title": "Show Edited Files", "category": "Hunker", "icon": "$(list-selection)" },
       { "command": "hunker.peekRemoved", "title": "Peek Removed Lines at Cursor", "category": "Hunker" },
       { "command": "hunker.installHook", "title": "Install Claude Code Hook", "category": "Hunker" },
       { "command": "hunker.uninstallHook", "title": "Uninstall Claude Code Hook", "category": "Hunker" }
@@ -46,6 +46,15 @@
         { "command": "hunker.prevHunk", "when": "hunker.hasAnyChanges" },
         { "command": "hunker.nextFile", "when": "hunker.hasAnyChanges" },
         { "command": "hunker.prevFile", "when": "hunker.hasAnyChanges" }
+      ],
+      "editor/title": [
+        { "command": "hunker.prevFile", "group": "navigation@-105", "when": "hunker.hasMultipleFiles" },
+        { "command": "hunker.showFiles", "group": "navigation@-104", "when": "hunker.hasAnyChanges" },
+        { "command": "hunker.nextFile", "group": "navigation@-103", "when": "hunker.hasMultipleFiles" },
+        { "command": "hunker.rejectFile", "group": "navigation@-102", "when": "hunker.editorHasChanges && resourceScheme == file" },
+        { "command": "hunker.acceptFile", "group": "navigation@-101", "when": "hunker.editorHasChanges && resourceScheme == file" },
+        { "command": "hunker.rejectAll", "group": "navigation@-100", "when": "hunker.hasAnyChanges" },
+        { "command": "hunker.acceptAll", "group": "navigation@-99", "when": "hunker.hasAnyChanges" }
       ]
     },
     "configuration": {
@@ -80,8 +89,8 @@
     ],
     "colors": [
       {
-        "id": "hunker.addedLineBorder",
-        "description": "Left border on lines Claude added or changed.",
+        "id": "hunker.addedLineRuler",
+        "description": "Scrollbar mark for lines Claude added or changed.",
         "defaults": { "dark": "#3fb950", "light": "#1a7f37", "highContrast": "#3fb950", "highContrastLight": "#1a7f37" }
       },
       {

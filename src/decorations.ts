@@ -1,4 +1,4 @@
-// Added lines (green background + left border) and deletion markers (thin red line).
+// Added lines (green background) and deletion markers (thin red line).
 import * as vscode from 'vscode';
 import type { ReviewModel } from './model';
 
@@ -6,10 +6,7 @@ export class Decorations implements vscode.Disposable {
   private readonly added = vscode.window.createTextEditorDecorationType({
     isWholeLine: true,
     backgroundColor: new vscode.ThemeColor('diffEditor.insertedLineBackground'),
-    borderWidth: '0 0 0 3px',
-    borderStyle: 'solid',
-    borderColor: new vscode.ThemeColor('hunker.addedLineBorder'),
-    overviewRulerColor: new vscode.ThemeColor('hunker.addedLineBorder'),
+    overviewRulerColor: new vscode.ThemeColor('hunker.addedLineRuler'),
     overviewRulerLane: vscode.OverviewRulerLane.Left,
   });
   /** Pure deletion: the removed code used to sit just above this line. */

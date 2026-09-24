@@ -1,6 +1,5 @@
-// Lenses above each hunk (Accept · Reject · Show removed) and a file header on line 0.
+// Lenses above each hunk: Accept · Reject · Show removed.
 import * as vscode from 'vscode';
-import { plural } from './actions';
 import { anchorLine } from './diff';
 import type { ReviewModel } from './model';
 
@@ -17,28 +16,9 @@ export class HunkCodeLensProvider implements vscode.CodeLensProvider {
     const state = this.model.get(doc.uri.fsPath);
     if (!state) return [];
 
-    const files = this.model.pendingFiles();
-    const index = files.findIndex((f) => f.path === state.path);
-    const top = new vscode.Range(0, 0, 0, 0);
+    // File-level actions live in the editor title bar; lenses are per hunk only.
     const path = state.path;
-    const lenses = [
-      new vscode.CodeLens(top, {
-        title: `Claude: ${plural(state.hunks.length, 'change')}`,
-        command: 'hunker.showFiles',
-        tooltip: 'Show all files Claude edited',
-      }),
-      new vscode.CodeLens(top, { title: 'Accept file', command: 'hunker.acceptFile', arguments: [path] }),
-      new vscode.CodeLens(top, { title: 'Reject file', command: 'hunker.rejectFile', arguments: [path] }),
-    ];
-    if (files.length > 1) {
-      lenses.push(
-        new vscode.CodeLens(top, {
-          title: `Next file → (${index + 1}/${files.length})`,
-          command: 'hunker.nextFile',
-        }),
-      );
-    }
-
+    const lenses: vscode.CodeLens[] = [];
     for (const h of state.hunks) {
       const line = anchorLine(h, doc.lineCount);
       const range = new vscode.Range(line, 0, line, 0);

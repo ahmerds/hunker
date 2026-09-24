@@ -2,10 +2,10 @@
 
 Review Claude Code's file edits inline in Cursor or VS Code, the way Cursor's own agent works. Claude writes straight to disk. Hunker then marks every change since your last review in the normal editor, and you accept or reject each hunk, or a whole file at a time. There is no review panel.
 
-- **Added or changed lines**: green background with a green bar on the left.
+- **Added or changed lines**: green background.
 - **Removed lines**: a thin red line where the code used to be. Hover to see the diff, or click **Show removed** to open the old code in an inline peek box.
 - **Buttons above each change**: `Accept` · `Reject` · `Show removed (N)`.
-- **Buttons at the top of the file**: `Claude: N changes` · `Accept file` · `Reject file` · `Next file →`.
+- **Editor title bar** (top right, next to the tabs): `←` previous file · `☰` list of edited files · `→` next file · `↺` reject file · `✓` accept file · `⊠` reject all files · `✓✓` accept all files. The arrows only appear when more than one file has changes. Reject all asks you to confirm first.
 - **Status bar**: `‹ 3 files · 7 changes ›`. Click the middle to pick a file, or the arrows to move between files.
 - **Explorer and tabs**: files with pending changes get a badge.
 
@@ -96,7 +96,7 @@ In the Claude Code panel, switch the permission mode to **Edit automatically** (
 
 1. Open a project folder in Cursor. Hunker only shows files inside the open workspace.
 2. Ask Claude to edit a file.
-3. The changed lines turn green and **Accept / Reject** buttons appear above them. The status bar shows `1 file · N changes`.
+3. The changed lines turn green, **Accept / Reject** buttons appear above them, and accept-file / reject-file icons appear in the editor title bar. The status bar shows `1 file · N changes`.
 
 If nothing appears, see [Troubleshooting](#troubleshooting).
 
