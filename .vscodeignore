@@ -1,0 +1,5 @@
+**
+!package.json
+!README.md
+!dist/extension.js
+!hook/capture.js

@@ -1,0 +1,117 @@
+{
+  "name": "hunker",
+  "displayName": "Hunker",
+  "description": "Review Claude Code's file edits inline, hunk by hunk: accept, reject, and move between edited files.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "hunker.acceptHunk", "title": "Accept Change at Cursor", "category": "Hunker", "icon": "$(check)" },
+      { "command": "hunker.rejectHunk", "title": "Reject Change at Cursor", "category": "Hunker", "icon": "$(close)" },
+      { "command": "hunker.acceptFile", "title": "Accept All Changes in File", "category": "Hunker" },
+      { "command": "hunker.rejectFile", "title": "Reject All Changes in File", "category": "Hunker" },
+      { "command": "hunker.acceptAll", "title": "Accept All Changes (All Files)", "category": "Hunker" },
+      { "command": "hunker.rejectAll", "title": "Reject All Changes (All Files)", "category": "Hunker" },
+      { "command": "hunker.nextHunk", "title": "Next Change", "category": "Hunker" },
+      { "command": "hunker.prevHunk", "title": "Previous Change", "category": "Hunker" },
+      { "command": "hunker.nextFile", "title": "Next Edited File", "category": "Hunker" },
+      { "command": "hunker.prevFile", "title": "Previous Edited File", "category": "Hunker" },
+      { "command": "hunker.showFiles", "title": "Show Edited Files", "category": "Hunker" },
+      { "command": "hunker.peekRemoved", "title": "Peek Removed Lines at Cursor", "category": "Hunker" },
+      { "command": "hunker.installHook", "title": "Install Claude Code Hook", "category": "Hunker" },
+      { "command": "hunker.uninstallHook", "title": "Uninstall Claude Code Hook", "category": "Hunker" }
+    ],
+    "menus": {
+      "commandPalette": [
+        { "command": "hunker.acceptHunk", "when": "hunker.editorHasChanges" },
+        { "command": "hunker.rejectHunk", "when": "hunker.editorHasChanges" },
+        { "command": "hunker.acceptFile", "when": "hunker.editorHasChanges" },
+        { "command": "hunker.rejectFile", "when": "hunker.editorHasChanges" },
+        { "command": "hunker.peekRemoved", "when": "hunker.editorHasChanges" },
+        { "command": "hunker.acceptAll", "when": "hunker.hasAnyChanges" },
+        { "command": "hunker.rejectAll", "when": "hunker.hasAnyChanges" },
+        { "command": "hunker.nextHunk", "when": "hunker.hasAnyChanges" },
+        { "command": "hunker.prevHunk", "when": "hunker.hasAnyChanges" },
+        { "command": "hunker.nextFile", "when": "hunker.hasAnyChanges" },
+        { "command": "hunker.prevFile", "when": "hunker.hasAnyChanges" }
+      ]
+    },
+    "configuration": {
+      "title": "Hunker",
+      "properties": {
+        "hunker.keybindingStyle": {
+          "type": "string",
+          "enum": ["cmd", "alt"],
+          "enumDescriptions": [
+            "Cmd+Y / Cmd+N accept and reject (same keys as Cursor's inline edits).",
+            "Alt+Y / Alt+N accept and reject, if Cmd+Y / Cmd+N clash with something."
+          ],
+          "default": "cmd",
+          "description": "Which keys accept and reject changes."
+        }
+      }
+    },
+    "keybindings": [
+      { "command": "hunker.acceptHunk", "key": "ctrl+y", "mac": "cmd+y", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle != 'alt'" },
+      { "command": "hunker.rejectHunk", "key": "ctrl+n", "mac": "cmd+n", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle != 'alt'" },
+      { "command": "hunker.acceptFile", "key": "ctrl+shift+y", "mac": "cmd+shift+y", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle != 'alt'" },
+      { "command": "hunker.rejectFile", "key": "ctrl+shift+n", "mac": "cmd+shift+n", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle != 'alt'" },
+      { "command": "hunker.acceptHunk", "key": "alt+y", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle == 'alt'" },
+      { "command": "hunker.rejectHunk", "key": "alt+n", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle == 'alt'" },
+      { "command": "hunker.acceptFile", "key": "alt+shift+y", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle == 'alt'" },
+      { "command": "hunker.rejectFile", "key": "alt+shift+n", "when": "editorTextFocus && hunker.editorHasChanges && config.hunker.keybindingStyle == 'alt'" },
+      { "command": "hunker.nextHunk", "key": "alt+]", "when": "hunker.hasAnyChanges" },
+      { "command": "hunker.prevHunk", "key": "alt+[", "when": "hunker.hasAnyChanges" },
+      { "command": "hunker.nextFile", "key": "alt+shift+]", "when": "hunker.hasAnyChanges" },
+      { "command": "hunker.prevFile", "key": "alt+shift+[", "when": "hunker.hasAnyChanges" },
+      { "command": "hunker.peekRemoved", "key": "alt+\\", "when": "editorTextFocus && hunker.editorHasChanges" }
+    ],
+    "colors": [
+      {
+        "id": "hunker.addedLineBorder",
+        "description": "Left border on lines Claude added or changed.",
+        "defaults": { "dark": "#3fb950", "light": "#1a7f37", "highContrast": "#3fb950", "highContrastLight": "#1a7f37" }
+      },
+      {
+        "id": "hunker.removedMarker",
+        "description": "Line marking where Claude removed code.",
+        "defaults": { "dark": "#f85149", "light": "#cf222e", "highContrast": "#f85149", "highContrastLight": "#cf222e" }
+      },
+      {
+        "id": "hunker.fileDecoration",
+        "description": "Explorer and tab colour for files with changes waiting for review.",
+        "defaults": { "dark": "#d29922", "light": "#9a6700", "highContrast": "#d29922", "highContrastLight": "#9a6700" }
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "node esbuild.mjs --test && node --test out/test/*.test.js",
+    "package": "npm run typecheck && npm test && node esbuild.mjs --production && vsce package --allow-missing-repository --skip-license --no-dependencies -o hunker.vsix",
+    "vscode:prepublish": "node esbuild.mjs --production"
+  },
+  "dependencies": {
+    "diff": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "~1.90.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
