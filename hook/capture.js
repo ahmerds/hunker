@@ -18,6 +18,17 @@ function baselineDir() {
   return process.env.HUNKER_BASELINE_DIR || path.join(os.homedir(), '.claude', 'hunker', 'baselines');
 }
 
+/**
+ * Cursor's own agent also runs hooks from ~/.claude/settings.json. Its edits
+ * already go through Cursor's review, so only capture for Claude Code.
+ * Cursor sends `cursor_version` and a lowercase `preToolUse` event, and
+ * doesn't set CLAUDECODE.
+ */
+function fromClaudeCode(data) {
+  if (data.cursor_version !== undefined) return false;
+  return process.env.CLAUDECODE === '1' || data.hook_event_name === 'PreToolUse';
+}
+
 function capture(raw) {
   let data;
   try {
@@ -25,7 +36,8 @@ function capture(raw) {
   } catch {
     return;
   }
-  const input = data?.tool_input || {};
+  if (!data || typeof data !== 'object' || !fromClaudeCode(data)) return;
+  const input = data.tool_input || {};
   let file = input.file_path || input.notebook_path;
   if (typeof file !== 'string' || file === '') return;
   if (!path.isAbsolute(file)) file = path.resolve(data.cwd || process.cwd(), file);

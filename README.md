@@ -161,6 +161,7 @@ If `cmd+y` / `cmd+n` clash with something, set `"hunker.keybindingStyle": "alt"`
 
 - Edits Claude makes through **Bash** (`sed -i`, heredocs) skip the hook and won't appear.
 - Once you save your own edits to a file that has pending changes, they show up as part of the diff too.
+- Edits by Cursor's own agent are ignored, because Cursor already has its own review for those. Cursor runs Claude Code's hooks as well, so the hook skips any call that comes from Cursor. The exception: if Cursor's agent edits a file that still has Claude changes waiting, its edits show up in that file's diff.
 - Removed lines aren't drawn as real lines in the editor; use hover or **Show removed**. This keeps Hunker on stable VS Code APIs, so it runs in Cursor without any `argv.json` changes.
 - Claude Code must be in **Edit automatically** mode, or its own diff prompts appear as well.
 - Files over 2 MB and binary files aren't tracked.
