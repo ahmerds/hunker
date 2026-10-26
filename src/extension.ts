@@ -4,6 +4,7 @@ import { HunkCodeLensProvider } from './codelens';
 import { Decorations } from './decorations';
 import { installHook, promptIfMissing, refreshScript, uninstallHook } from './hookInstaller';
 import { HunkHoverProvider } from './hover';
+import { RemovedLineInsets } from './insets';
 import { ReviewModel } from './model';
 import { Navigation, PendingFileDecorations, StatusBar } from './navigation';
 import { BASE_SCHEME, BaselineContentProvider, peekRemoved } from './peek';
@@ -51,6 +52,7 @@ export function activate(context: vscode.ExtensionContext): void {
     fileDecorations,
     baselines,
     new Decorations(model),
+    new RemovedLineInsets(model),
     new StatusBar(model),
     vscode.window.registerFileDecorationProvider(fileDecorations),
     vscode.languages.registerCodeLensProvider(files, new HunkCodeLensProvider(model)),

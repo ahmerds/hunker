@@ -16,6 +16,9 @@
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
+  "enabledApiProposals": [
+    "editorInsets"
+  ],
   "contributes": {
     "commands": [
       { "command": "hunker.acceptHunk", "title": "Accept Change at Cursor", "category": "Hunker", "icon": "$(check)" },
@@ -69,6 +72,11 @@
           ],
           "default": "cmd",
           "description": "Which keys accept and reject changes."
+        },
+        "hunker.inlineRemovedLines": {
+          "type": "boolean",
+          "default": true,
+          "description": "Draw removed lines inline, between the editor's lines. Needs \"enable-proposed-api\": [\"local.hunker\"] in argv.json; without it Hunker shows a red marker line instead."
         }
       }
     },

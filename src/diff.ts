@@ -108,3 +108,12 @@ export function hunkSpan(hunk: Hunk): number {
 export function anchorLine(hunk: Hunk, lineCount: number): number {
   return Math.max(0, Math.min(hunk.newStart, lineCount - 1));
 }
+
+/**
+ * Line the removed-lines inset is drawn below, so it sits just above the
+ * hunk's new lines. -1 puts it above the first line; a deletion past the end
+ * of the file goes below the last line.
+ */
+export function insetLine(hunk: Hunk, lineCount: number): number {
+  return Math.min(hunk.newStart, lineCount) - 1;
+}

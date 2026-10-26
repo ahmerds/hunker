@@ -3,7 +3,7 @@
 Review Claude Code's file edits inline in Cursor or VS Code, the way Cursor's own agent works. Claude writes straight to disk. Hunker then marks every change since your last review in the normal editor, and you accept or reject each hunk, or a whole file at a time. There is no review panel.
 
 - **Added or changed lines**: green background.
-- **Removed lines**: a thin red line where the code used to be. Hover to see the diff, or click **Show removed** to open the old code in an inline peek box.
+- **Removed lines**: drawn in red right where the code used to be, above any lines that replaced them, like Cursor does. This needs one line in `argv.json` ([step 7](#7-optional-show-removed-lines-inline)); without it you get a thin red line in that spot instead. Either way, hover to see the diff, or click **Show removed** to open the old code in an inline peek box.
 - **Buttons above each change**: `Accept` · `Reject` · `Show removed (N)`.
 - **Editor title bar** (top right, next to the tabs): `←` previous file · `☰` list of edited files · `→` next file · `↺` reject file · `✓` accept file · `⊠` reject all files · `✓✓` accept all files. The arrows only appear when more than one file has changes. Reject all asks you to confirm first.
 - **Status bar**: `‹ 3 files · 7 changes ›`. Click the middle to pick a file, or the arrows to move between files.
@@ -92,11 +92,31 @@ In the Claude Code panel, switch the permission mode to **Edit automatically** (
 
 **Start a new Claude Code session.** Hooks are read when a session starts, so a session that was already open won't use the new hook.
 
-### 7. Try it
+### 7. Optional: show removed lines inline
+
+Showing removed lines between the editor's lines uses a VS Code API that is still a proposal, so the editor only lets Hunker use it if you allow it:
+
+1. Command Palette → **Preferences: Configure Runtime Arguments**. This opens `~/.cursor/argv.json` (VS Code: `~/.vscode/argv.json`).
+2. Add this entry inside the outer `{ }`. If there's already an `enable-proposed-api` list, add `"local.hunker"` to it.
+
+   ```jsonc
+   "enable-proposed-api": ["local.hunker"]
+   ```
+
+3. Quit and reopen Cursor completely. Reloading the window isn't enough.
+
+To get the marker line back without editing `argv.json`, set `"hunker.inlineRemovedLines": false`.
+
+If the API is missing (no `argv.json` entry, or a future Cursor or VS Code update drops it), Hunker falls back to the red marker line. Accept, reject, hover and peek work the same in both modes.
+
+Without the entry, Cursor's log shows `Extension 'local.hunker' CANNOT use these API proposals 'editorInsets'`. That message is harmless.
+
+### 8. Try it
 
 1. Open a project folder in Cursor. Hunker only shows files inside the open workspace.
 2. Ask Claude to edit a file.
 3. The changed lines turn green, **Accept / Reject** buttons appear above them, and accept-file / reject-file icons appear in the editor title bar. The status bar shows `1 file · N changes`.
+4. If you did step 7, the lines Claude removed show in red above the green ones.
 
 ---
 
@@ -162,7 +182,7 @@ If `cmd+y` / `cmd+n` clash with something, set `"hunker.keybindingStyle": "alt"`
 - Edits Claude makes through **Bash** (`sed -i`, heredocs) skip the hook and won't appear.
 - Once you save your own edits to a file that has pending changes, they show up as part of the diff too.
 - Edits by Cursor's own agent are ignored, because Cursor already has its own review for those. Cursor runs Claude Code's hooks as well, so the hook skips any call that comes from Cursor. The exception: if Cursor's agent edits a file that still has Claude changes waiting, its edits show up in that file's diff.
-- Removed lines aren't drawn as real lines in the editor; use hover or **Show removed**. This keeps Hunker on stable VS Code APIs, so it runs in Cursor without any `argv.json` changes.
+- Inline removed lines need the `argv.json` entry ([step 7](#7-optional-show-removed-lines-inline)). They're shown as plain text without syntax highlighting (**Show removed** has highlighting). To keep things fast, only changes near what's on screen get them, at most 10 per editor and 20 lines each; a longer block ends in a link to the peek box. Scrolling with the pointer over a block moves a line at a time.
 - Claude Code must be in **Edit automatically** mode, or its own diff prompts appear as well.
 - Files over 2 MB and binary files aren't tracked.
 
@@ -187,5 +207,6 @@ To debug, open this folder in Cursor or VS Code and press `F5` (**Run Extension*
 | `src/model.ts` | Hunks for each file, recomputing, context keys. |
 | `src/actions.ts` | Accept and reject for a hunk, a file, or everything. |
 | `src/decorations.ts`, `codelens.ts`, `hover.ts`, `peek.ts` | What you see in the editor. |
+| `src/insets.ts` | Inline removed lines (proposed `editorInsets` API, optional). |
 | `src/navigation.ts` | Next/prev, the quick pick, the status bar, explorer badges. |
 | `src/hookInstaller.ts` | Installs and removes the hook in `~/.claude/settings.json`. |

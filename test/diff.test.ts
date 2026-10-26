@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { acceptHunk, anchorLine, computeHunks, joinLines, minimalEdit, rejectHunk, splitLines } from '../src/diff';
+import { acceptHunk, anchorLine, computeHunks, insetLine, joinLines, minimalEdit, rejectHunk, splitLines } from '../src/diff';
 
 /** Accepting every hunk (last first, so offsets stay valid) must give the new text. */
 function acceptAll(oldText: string, newText: string): string {
@@ -48,7 +48,17 @@ test('pure deletion at end of file without trailing newline anchors past the end
   assert.equal(hunks[0].newStart, 1);
   assert.deepEqual(hunks[0].newLines, []);
   assert.equal(anchorLine(hunks[0], 1), 0);
+  assert.equal(insetLine(hunks[0], 1), 0);
   roundTrips('a\nb', 'a');
+});
+
+test('removed-lines inset sits just above the hunk', () => {
+  const [change] = computeHunks('a\nb\nc\n', 'a\nB\nc\n');
+  assert.equal(insetLine(change, 4), 0);
+  const [deletion] = computeHunks('a\nb\nc\nd\n', 'a\nd\n');
+  assert.equal(insetLine(deletion, 3), 0);
+  const [atTop] = computeHunks('a\nb\n', 'B\nb\n');
+  assert.equal(insetLine(atTop, 3), -1);
 });
 
 test('CRLF lines are kept intact', () => {
